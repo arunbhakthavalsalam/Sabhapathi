@@ -1,0 +1,19 @@
+# macOS
+.DS_Store
+
+# Xcode
+.DerivedData/
+**/xcuserdata/
+*.xcuserstate
+
+# Python
+PythonBackend/venv/
+**/__pycache__/
+*.pyc
+
+# Sample audio / large regeneratable artifacts
+/Sabhapathi*.mp3
+/ffmpeg.zip
+
+# App-support state (user-generated projects)
+projects.json

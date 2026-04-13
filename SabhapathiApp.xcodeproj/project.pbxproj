@@ -1,0 +1,464 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A10001000000000000000001 /* SabhapathiApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20001000000000000000001 /* SabhapathiApp.swift */; };
+		A10002000000000000000002 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20002000000000000000002 /* AppDelegate.swift */; };
+		A10003000000000000000003 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20003000000000000000003 /* ContentView.swift */; };
+		A10004000000000000000004 /* ImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20004000000000000000004 /* ImportView.swift */; };
+		A10005000000000000000005 /* ProcessingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20005000000000000000005 /* ProcessingView.swift */; };
+		A10006000000000000000006 /* KaraokePlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20006000000000000000006 /* KaraokePlayerView.swift */; };
+		A10007000000000000000007 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20007000000000000000007 /* LibraryView.swift */; };
+		A10008000000000000000008 /* StemMixerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20008000000000000000008 /* StemMixerView.swift */; };
+		A10009000000000000000009 /* LyricsDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20009000000000000000009 /* LyricsDisplayView.swift */; };
+		A1000A00000000000000000A /* ChorusSectionEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000A00000000000000000A /* ChorusSectionEditor.swift */; };
+		A1000B00000000000000000B /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000B00000000000000000B /* SettingsView.swift */; };
+		A1000C00000000000000000C /* PythonBackendManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000C00000000000000000C /* PythonBackendManager.swift */; };
+		A1000D00000000000000000D /* BackendAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000D00000000000000000D /* BackendAPIClient.swift */; };
+		A1000E00000000000000000E /* AudioEngineService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000E00000000000000000E /* AudioEngineService.swift */; };
+		A1000F00000000000000000F /* StemMixer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000F00000000000000000F /* StemMixer.swift */; };
+		A10010000000000000000010 /* LyricsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20010000000000000000010 /* LyricsService.swift */; };
+		A10011000000000000000011 /* LRCParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20011000000000000000011 /* LRCParser.swift */; };
+		A10012000000000000000012 /* ProjectManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20012000000000000000012 /* ProjectManager.swift */; };
+		A10013000000000000000013 /* AudioExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20013000000000000000013 /* AudioExporter.swift */; };
+		A10014000000000000000014 /* KaraokeProject.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20014000000000000000014 /* KaraokeProject.swift */; };
+		A10015000000000000000015 /* Song.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20015000000000000000015 /* Song.swift */; };
+		A10016000000000000000016 /* StemSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20016000000000000000016 /* StemSet.swift */; };
+		A10017000000000000000017 /* LyricsLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20017000000000000000017 /* LyricsLine.swift */; };
+		A10018000000000000000018 /* ProcessingJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20018000000000000000018 /* ProcessingJob.swift */; };
+		E483AB0B2F8C9C5F004383E4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E483AB0A2F8C9C5F004383E4 /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A20001000000000000000001 /* SabhapathiApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SabhapathiApp.swift; sourceTree = "<group>"; };
+		A20002000000000000000002 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		A20003000000000000000003 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		A20004000000000000000004 /* ImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportView.swift; sourceTree = "<group>"; };
+		A20005000000000000000005 /* ProcessingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessingView.swift; sourceTree = "<group>"; };
+		A20006000000000000000006 /* KaraokePlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaraokePlayerView.swift; sourceTree = "<group>"; };
+		A20007000000000000000007 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
+		A20008000000000000000008 /* StemMixerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StemMixerView.swift; sourceTree = "<group>"; };
+		A20009000000000000000009 /* LyricsDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricsDisplayView.swift; sourceTree = "<group>"; };
+		A2000A00000000000000000A /* ChorusSectionEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChorusSectionEditor.swift; sourceTree = "<group>"; };
+		A2000B00000000000000000B /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		A2000C00000000000000000C /* PythonBackendManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PythonBackendManager.swift; sourceTree = "<group>"; };
+		A2000D00000000000000000D /* BackendAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendAPIClient.swift; sourceTree = "<group>"; };
+		A2000E00000000000000000E /* AudioEngineService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioEngineService.swift; sourceTree = "<group>"; };
+		A2000F00000000000000000F /* StemMixer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StemMixer.swift; sourceTree = "<group>"; };
+		A20010000000000000000010 /* LyricsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricsService.swift; sourceTree = "<group>"; };
+		A20011000000000000000011 /* LRCParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LRCParser.swift; sourceTree = "<group>"; };
+		A20012000000000000000012 /* ProjectManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectManager.swift; sourceTree = "<group>"; };
+		A20013000000000000000013 /* AudioExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioExporter.swift; sourceTree = "<group>"; };
+		A20014000000000000000014 /* KaraokeProject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaraokeProject.swift; sourceTree = "<group>"; };
+		A20015000000000000000015 /* Song.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Song.swift; sourceTree = "<group>"; };
+		A20016000000000000000016 /* StemSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StemSet.swift; sourceTree = "<group>"; };
+		A20017000000000000000017 /* LyricsLine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricsLine.swift; sourceTree = "<group>"; };
+		A20018000000000000000018 /* ProcessingJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessingJob.swift; sourceTree = "<group>"; };
+		A20019000000000000000019 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A2001A00000000000000001A /* Sabhapathi.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Sabhapathi.entitlements; sourceTree = "<group>"; };
+		A2001B00000000000000001B /* Sabhapathi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sabhapathi.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E483AB0A2F8C9C5F004383E4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A30001000000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A40001000000000000000001 = {
+			isa = PBXGroup;
+			children = (
+				E483AB0A2F8C9C5F004383E4 /* Assets.xcassets */,
+				A40002000000000000000002 /* SabhapathiApp */,
+				A40007000000000000000007 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A40002000000000000000002 /* SabhapathiApp */ = {
+			isa = PBXGroup;
+			children = (
+				A40003000000000000000003 /* App */,
+				A40004000000000000000004 /* Views */,
+				A40005000000000000000005 /* Services */,
+				A40006000000000000000006 /* Models */,
+				A40008000000000000000008 /* Resources */,
+			);
+			path = SabhapathiApp;
+			sourceTree = "<group>";
+		};
+		A40003000000000000000003 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				A20001000000000000000001 /* SabhapathiApp.swift */,
+				A20002000000000000000002 /* AppDelegate.swift */,
+				A20003000000000000000003 /* ContentView.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		A40004000000000000000004 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				A20004000000000000000004 /* ImportView.swift */,
+				A20005000000000000000005 /* ProcessingView.swift */,
+				A20006000000000000000006 /* KaraokePlayerView.swift */,
+				A20007000000000000000007 /* LibraryView.swift */,
+				A20008000000000000000008 /* StemMixerView.swift */,
+				A20009000000000000000009 /* LyricsDisplayView.swift */,
+				A2000A00000000000000000A /* ChorusSectionEditor.swift */,
+				A2000B00000000000000000B /* SettingsView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		A40005000000000000000005 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				A2000C00000000000000000C /* PythonBackendManager.swift */,
+				A2000D00000000000000000D /* BackendAPIClient.swift */,
+				A2000E00000000000000000E /* AudioEngineService.swift */,
+				A2000F00000000000000000F /* StemMixer.swift */,
+				A20010000000000000000010 /* LyricsService.swift */,
+				A20011000000000000000011 /* LRCParser.swift */,
+				A20012000000000000000012 /* ProjectManager.swift */,
+				A20013000000000000000013 /* AudioExporter.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		A40006000000000000000006 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				A20014000000000000000014 /* KaraokeProject.swift */,
+				A20015000000000000000015 /* Song.swift */,
+				A20016000000000000000016 /* StemSet.swift */,
+				A20017000000000000000017 /* LyricsLine.swift */,
+				A20018000000000000000018 /* ProcessingJob.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		A40007000000000000000007 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A2001B00000000000000001B /* Sabhapathi.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A40008000000000000000008 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				A20019000000000000000019 /* Info.plist */,
+				A2001A00000000000000001A /* Sabhapathi.entitlements */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A50001000000000000000001 /* Sabhapathi */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A70001000000000000000001 /* Build configuration list for PBXNativeTarget "Sabhapathi" */;
+			buildPhases = (
+				A60001000000000000000001 /* Sources */,
+				A30001000000000000000001 /* Frameworks */,
+				A60002000000000000000002 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Sabhapathi;
+			productName = Sabhapathi;
+			productReference = A2001B00000000000000001B /* Sabhapathi.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A80001000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					A50001000000000000000001 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = A70002000000000000000002 /* Build configuration list for PBXProject "SabhapathiApp" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A40001000000000000000001;
+			productRefGroup = A40007000000000000000007 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A50001000000000000000001 /* Sabhapathi */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A60002000000000000000002 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E483AB0B2F8C9C5F004383E4 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A60001000000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10001000000000000000001 /* SabhapathiApp.swift in Sources */,
+				A10002000000000000000002 /* AppDelegate.swift in Sources */,
+				A10003000000000000000003 /* ContentView.swift in Sources */,
+				A10004000000000000000004 /* ImportView.swift in Sources */,
+				A10005000000000000000005 /* ProcessingView.swift in Sources */,
+				A10006000000000000000006 /* KaraokePlayerView.swift in Sources */,
+				A10007000000000000000007 /* LibraryView.swift in Sources */,
+				A10008000000000000000008 /* StemMixerView.swift in Sources */,
+				A10009000000000000000009 /* LyricsDisplayView.swift in Sources */,
+				A1000A00000000000000000A /* ChorusSectionEditor.swift in Sources */,
+				A1000B00000000000000000B /* SettingsView.swift in Sources */,
+				A1000C00000000000000000C /* PythonBackendManager.swift in Sources */,
+				A1000D00000000000000000D /* BackendAPIClient.swift in Sources */,
+				A1000E00000000000000000E /* AudioEngineService.swift in Sources */,
+				A1000F00000000000000000F /* StemMixer.swift in Sources */,
+				A10010000000000000000010 /* LyricsService.swift in Sources */,
+				A10011000000000000000011 /* LRCParser.swift in Sources */,
+				A10012000000000000000012 /* ProjectManager.swift in Sources */,
+				A10013000000000000000013 /* AudioExporter.swift in Sources */,
+				A10014000000000000000014 /* KaraokeProject.swift in Sources */,
+				A10015000000000000000015 /* Song.swift in Sources */,
+				A10016000000000000000016 /* StemSet.swift in Sources */,
+				A10017000000000000000017 /* LyricsLine.swift in Sources */,
+				A10018000000000000000018 /* ProcessingJob.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		B10001000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		B10002000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		B10003000000000000000003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = SabhapathiApp/Resources/Sabhapathi.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = SabhapathiApp/Resources/Info.plist;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright 2026. All rights reserved.";
+				INFOPLIST_KEY_NSMainStoryboardFile = "";
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sabhapathi.karaoke;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		B10004000000000000000004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = SabhapathiApp/Resources/Sabhapathi.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = SabhapathiApp/Resources/Info.plist;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright 2026. All rights reserved.";
+				INFOPLIST_KEY_NSMainStoryboardFile = "";
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sabhapathi.karaoke;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A70001000000000000000001 /* Build configuration list for PBXNativeTarget "Sabhapathi" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B10003000000000000000003 /* Debug */,
+				B10004000000000000000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A70002000000000000000002 /* Build configuration list for PBXProject "SabhapathiApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B10001000000000000000001 /* Debug */,
+				B10002000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A80001000000000000000001 /* Project object */;
+}
