@@ -50,6 +50,7 @@ struct ContentView: View {
             ProcessingView(project: binding(for: project))
         case .completed:
             KaraokePlayerView(project: project)
+                .id(project.id)
         case .failed:
             VStack(spacing: 12) {
                 Image(systemName: "exclamationmark.triangle")

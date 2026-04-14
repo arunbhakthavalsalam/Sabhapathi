@@ -24,6 +24,8 @@ final class AudioEngineService: ObservableObject {
         playerNodes.removeAll()
         audioFiles.removeAll()
         mixerNodes.removeAll()
+        duration = 0
+        currentTime = 0
 
         let mainMixer = engine.mainMixerNode
 
