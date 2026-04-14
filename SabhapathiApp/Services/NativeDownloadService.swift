@@ -22,8 +22,8 @@ final class NativeDownloadService: DownloadService {
     private let projectsDir: URL
 
     init(
-        ytdlpPath: String = "/Users/arunb/Documents/Sabhapathi/yt-dlp_macos",
-        ffmpegPath: String? = "/Users/arunb/Documents/Sabhapathi/ffmpeg"
+        ytdlpPath: String = RuntimePaths.ytdlp,
+        ffmpegPath: String? = RuntimePaths.ffmpeg
     ) {
         self.ytdlpPath = ytdlpPath
         self.ffmpegPath = ffmpegPath

@@ -26,8 +26,8 @@ final class NativeLyricsService {
     private let session: URLSession
 
     init(
-        pythonPath: String = "/Users/arunb/Documents/Sabhapathi/PythonBackend/venv/bin/python3",
-        whisperScriptPath: String = "/Users/arunb/Documents/Sabhapathi/PythonBackend/scripts/whisper_to_lrc.py",
+        pythonPath: String = RuntimePaths.python,
+        whisperScriptPath: String = RuntimePaths.whisperScript,
         session: URLSession = .shared
     ) {
         self.pythonPath = pythonPath
@@ -71,6 +71,7 @@ final class NativeLyricsService {
 
         let process = Process()
         process.executableURL = URL(fileURLWithPath: pythonPath)
+        process.environment = RuntimePaths.pythonProcessEnvironment()
         process.arguments = ["-u", whisperScriptPath, audioPath, projectId]
 
         let stdoutPipe = Pipe()

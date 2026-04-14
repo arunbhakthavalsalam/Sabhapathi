@@ -32,6 +32,10 @@
 		A1001F0000000000000001F0 /* DownloadService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2001F0000000000000001F0 /* DownloadService.swift */; };
 		A100200000000000000020000 /* NativeDownloadService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200200000000000000020000 /* NativeDownloadService.swift */; };
 		A100210000000000000021000 /* NativeLyricsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200210000000000000021000 /* NativeLyricsService.swift */; };
+		A100220000000000000022000 /* RuntimePaths.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200220000000000000022000 /* RuntimePaths.swift */; };
+		A100230000000000000023000 /* yt-dlp_macos in Resources */ = {isa = PBXBuildFile; fileRef = A200230000000000000023000 /* yt-dlp_macos */; };
+		A100240000000000000024000 /* ffmpeg in Resources */ = {isa = PBXBuildFile; fileRef = A200240000000000000024000 /* ffmpeg */; };
+		A100250000000000000025000 /* whisper_to_lrc.py in Resources */ = {isa = PBXBuildFile; fileRef = A200250000000000000025000 /* whisper_to_lrc.py */; };
 		A10014000000000000000014 /* KaraokeProject.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20014000000000000000014 /* KaraokeProject.swift */; };
 		A10015000000000000000015 /* Song.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20015000000000000000015 /* Song.swift */; };
 		A10016000000000000000016 /* StemSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20016000000000000000016 /* StemSet.swift */; };
@@ -66,6 +70,10 @@
 		A2001F0000000000000001F0 /* DownloadService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadService.swift; sourceTree = "<group>"; };
 		A200200000000000000020000 /* NativeDownloadService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeDownloadService.swift; sourceTree = "<group>"; };
 		A200210000000000000021000 /* NativeLyricsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeLyricsService.swift; sourceTree = "<group>"; };
+		A200220000000000000022000 /* RuntimePaths.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimePaths.swift; sourceTree = "<group>"; };
+		A200230000000000000023000 /* yt-dlp_macos */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = "yt-dlp_macos"; sourceTree = SOURCE_ROOT; };
+		A200240000000000000024000 /* ffmpeg */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = ffmpeg; sourceTree = SOURCE_ROOT; };
+		A200250000000000000025000 /* whisper_to_lrc.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; name = whisper_to_lrc.py; path = PythonBackend/scripts/whisper_to_lrc.py; sourceTree = SOURCE_ROOT; };
 		A20014000000000000000014 /* KaraokeProject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaraokeProject.swift; sourceTree = "<group>"; };
 		A20015000000000000000015 /* Song.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Song.swift; sourceTree = "<group>"; };
 		A20016000000000000000016 /* StemSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StemSet.swift; sourceTree = "<group>"; };
@@ -93,8 +101,19 @@
 			children = (
 				E483AB0A2F8C9C5F004383E4 /* Assets.xcassets */,
 				A40002000000000000000002 /* SabhapathiApp */,
+				A40009000000000000000009 /* BundledRuntime */,
 				A40007000000000000000007 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		A40009000000000000000009 /* BundledRuntime */ = {
+			isa = PBXGroup;
+			children = (
+				A200230000000000000023000 /* yt-dlp_macos */,
+				A200240000000000000024000 /* ffmpeg */,
+				A200250000000000000025000 /* whisper_to_lrc.py */,
+			);
+			name = BundledRuntime;
 			sourceTree = "<group>";
 		};
 		A40002000000000000000002 /* SabhapathiApp */ = {
@@ -151,6 +170,7 @@
 				A2001F0000000000000001F0 /* DownloadService.swift */,
 				A200200000000000000020000 /* NativeDownloadService.swift */,
 				A200210000000000000021000 /* NativeLyricsService.swift */,
+				A200220000000000000022000 /* RuntimePaths.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -194,6 +214,7 @@
 				A60001000000000000000001 /* Sources */,
 				A30001000000000000000001 /* Frameworks */,
 				A60002000000000000000002 /* Resources */,
+				A60003000000000000000003 /* Re-sign Bundled Binaries */,
 			);
 			buildRules = (
 			);
@@ -243,10 +264,35 @@
 			buildActionMask = 2147483647;
 			files = (
 				E483AB0B2F8C9C5F004383E4 /* Assets.xcassets in Resources */,
+				A100230000000000000023000 /* yt-dlp_macos in Resources */,
+				A100240000000000000024000 /* ffmpeg in Resources */,
+				A100250000000000000025000 /* whisper_to_lrc.py in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		A60003000000000000000003 /* Re-sign Bundled Binaries */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Re-sign Bundled Binaries";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "set -e\nif [ \"${CODE_SIGNING_ALLOWED}\" != \"YES\" ]; then\n  echo \"Code signing not enabled, skipping re-sign.\"\n  exit 0\nfi\nIDENTITY=\"${EXPANDED_CODE_SIGN_IDENTITY:-$CODE_SIGN_IDENTITY}\"\nif [ -z \"$IDENTITY\" ] || [ \"$IDENTITY\" = \"-\" ]; then\n  echo \"No signing identity, skipping re-sign.\"\n  exit 0\nfi\nENTS=\"${CODE_SIGN_ENTITLEMENTS}\"\nfor binary in yt-dlp_macos ffmpeg; do\n  target=\"${CODESIGNING_FOLDER_PATH}/Contents/Resources/${binary}\"\n  if [ -f \"$target\" ]; then\n    echo \"Re-signing $binary with $IDENTITY\"\n    if [ -n \"$ENTS\" ] && [ -f \"$SRCROOT/$ENTS\" ]; then\n      codesign --force --options runtime --timestamp --entitlements \"$SRCROOT/$ENTS\" --sign \"$IDENTITY\" \"$target\"\n    else\n      codesign --force --options runtime --timestamp --sign \"$IDENTITY\" \"$target\"\n    fi\n  fi\ndone\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		A60001000000000000000001 /* Sources */ = {
@@ -278,6 +324,7 @@
 				A1001F0000000000000001F0 /* DownloadService.swift in Sources */,
 				A100200000000000000020000 /* NativeDownloadService.swift in Sources */,
 				A100210000000000000021000 /* NativeLyricsService.swift in Sources */,
+				A100220000000000000022000 /* RuntimePaths.swift in Sources */,
 				A10014000000000000000014 /* KaraokeProject.swift in Sources */,
 				A10015000000000000000015 /* Song.swift in Sources */,
 				A10016000000000000000016 /* StemSet.swift in Sources */,
@@ -439,7 +486,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = SabhapathiApp/Resources/Sabhapathi.entitlements;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = VJ5KRG427U;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_APP_SANDBOX = NO;

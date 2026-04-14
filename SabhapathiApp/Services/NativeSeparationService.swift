@@ -24,13 +24,12 @@ final class NativeSeparationService: SeparationService {
         }
     }
 
-    /// Absolute path to the venv python. Prototype only; V2 will ship a bundled runtime.
     private let pythonPath: String
     private let modelName: String
     private let projectsDir: URL
 
     init(
-        pythonPath: String = "/Users/arunb/Documents/Sabhapathi/PythonBackend/venv/bin/python3",
+        pythonPath: String = RuntimePaths.python,
         modelName: String = "htdemucs"
     ) {
         self.pythonPath = pythonPath
@@ -108,6 +107,7 @@ final class NativeSeparationService: SeparationService {
     ) async throws {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: pythonPath)
+        process.environment = RuntimePaths.pythonProcessEnvironment()
         process.arguments = [
             "-u",
             "-m", "demucs.separate",
