@@ -7,9 +7,16 @@ final class LyricsService: ObservableObject {
     @Published var source: String = ""
 
     private let api = BackendAPIClient.shared
+    private let native = NativeLyricsService()
 
     func fetchLyrics(for project: KaraokeProject) async -> [LyricsLine] {
         await MainActor.run { isLoading = true }
+
+        if AppFlags.useNativeLyrics {
+            let parsed = await fetchLyricsNative(for: project)
+            await MainActor.run { self.isLoading = false }
+            return parsed
+        }
 
         // Try LRCLIB first
         do {
@@ -56,6 +63,39 @@ final class LyricsService: ObservableObject {
 
         await MainActor.run { isLoading = false }
         return []
+    }
+
+    private func fetchLyricsNative(for project: KaraokeProject) async -> [LyricsLine] {
+        // LRCLib first
+        if let lrc = try? await native.searchLrcLib(
+            title: project.song.title,
+            artist: project.song.artist,
+            duration: project.song.duration > 0 ? project.song.duration : nil
+        ), !lrc.isEmpty {
+            let parsed = LRCParser.parse(lrc)
+            await MainActor.run {
+                self.lyrics = parsed
+                self.source = "lrclib"
+            }
+            return parsed
+        }
+
+        // Whisper fallback on the vocals stem
+        guard let vocalsPath = project.stemSet?.vocals?.path else { return [] }
+        do {
+            let lrc = try await native.transcribeWhisper(
+                audioPath: vocalsPath,
+                projectId: project.id.uuidString
+            )
+            let parsed = LRCParser.parse(lrc)
+            await MainActor.run {
+                self.lyrics = parsed
+                self.source = "whisper"
+            }
+            return parsed
+        } catch {
+            return []
+        }
     }
 
     private func pollWhisperJob(jobId: String) async -> [LyricsLine] {

@@ -26,6 +26,12 @@
 		A10011000000000000000011 /* LRCParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20011000000000000000011 /* LRCParser.swift */; };
 		A10012000000000000000012 /* ProjectManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20012000000000000000012 /* ProjectManager.swift */; };
 		A10013000000000000000013 /* AudioExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20013000000000000000013 /* AudioExporter.swift */; };
+		A1001C0000000000000001C0 /* SeparationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2001C0000000000000001C0 /* SeparationService.swift */; };
+		A1001D0000000000000001D0 /* NativeSeparationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2001D0000000000000001D0 /* NativeSeparationService.swift */; };
+		A1001E0000000000000001E0 /* AppFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2001E0000000000000001E0 /* AppFlags.swift */; };
+		A1001F0000000000000001F0 /* DownloadService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2001F0000000000000001F0 /* DownloadService.swift */; };
+		A100200000000000000020000 /* NativeDownloadService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200200000000000000020000 /* NativeDownloadService.swift */; };
+		A100210000000000000021000 /* NativeLyricsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200210000000000000021000 /* NativeLyricsService.swift */; };
 		A10014000000000000000014 /* KaraokeProject.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20014000000000000000014 /* KaraokeProject.swift */; };
 		A10015000000000000000015 /* Song.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20015000000000000000015 /* Song.swift */; };
 		A10016000000000000000016 /* StemSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20016000000000000000016 /* StemSet.swift */; };
@@ -54,6 +60,12 @@
 		A20011000000000000000011 /* LRCParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LRCParser.swift; sourceTree = "<group>"; };
 		A20012000000000000000012 /* ProjectManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectManager.swift; sourceTree = "<group>"; };
 		A20013000000000000000013 /* AudioExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioExporter.swift; sourceTree = "<group>"; };
+		A2001C0000000000000001C0 /* SeparationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeparationService.swift; sourceTree = "<group>"; };
+		A2001D0000000000000001D0 /* NativeSeparationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeSeparationService.swift; sourceTree = "<group>"; };
+		A2001E0000000000000001E0 /* AppFlags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppFlags.swift; sourceTree = "<group>"; };
+		A2001F0000000000000001F0 /* DownloadService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadService.swift; sourceTree = "<group>"; };
+		A200200000000000000020000 /* NativeDownloadService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeDownloadService.swift; sourceTree = "<group>"; };
+		A200210000000000000021000 /* NativeLyricsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeLyricsService.swift; sourceTree = "<group>"; };
 		A20014000000000000000014 /* KaraokeProject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaraokeProject.swift; sourceTree = "<group>"; };
 		A20015000000000000000015 /* Song.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Song.swift; sourceTree = "<group>"; };
 		A20016000000000000000016 /* StemSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StemSet.swift; sourceTree = "<group>"; };
@@ -133,6 +145,12 @@
 				A20011000000000000000011 /* LRCParser.swift */,
 				A20012000000000000000012 /* ProjectManager.swift */,
 				A20013000000000000000013 /* AudioExporter.swift */,
+				A2001C0000000000000001C0 /* SeparationService.swift */,
+				A2001D0000000000000001D0 /* NativeSeparationService.swift */,
+				A2001E0000000000000001E0 /* AppFlags.swift */,
+				A2001F0000000000000001F0 /* DownloadService.swift */,
+				A200200000000000000020000 /* NativeDownloadService.swift */,
+				A200210000000000000021000 /* NativeLyricsService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -254,6 +272,12 @@
 				A10011000000000000000011 /* LRCParser.swift in Sources */,
 				A10012000000000000000012 /* ProjectManager.swift in Sources */,
 				A10013000000000000000013 /* AudioExporter.swift in Sources */,
+				A1001C0000000000000001C0 /* SeparationService.swift in Sources */,
+				A1001D0000000000000001D0 /* NativeSeparationService.swift in Sources */,
+				A1001E0000000000000001E0 /* AppFlags.swift in Sources */,
+				A1001F0000000000000001F0 /* DownloadService.swift in Sources */,
+				A100200000000000000020000 /* NativeDownloadService.swift in Sources */,
+				A100210000000000000021000 /* NativeLyricsService.swift in Sources */,
 				A10014000000000000000014 /* KaraokeProject.swift in Sources */,
 				A10015000000000000000015 /* Song.swift in Sources */,
 				A10016000000000000000016 /* StemSet.swift in Sources */,

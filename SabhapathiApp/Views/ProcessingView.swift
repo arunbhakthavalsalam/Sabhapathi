@@ -40,11 +40,11 @@ struct ProcessingView: View {
                 Button("Start Processing") {
                     startSeparation()
                 }
-                .disabled(!backendManager.isRunning)
+                .disabled(!AppFlags.useNativeSeparation && !backendManager.isRunning)
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)
 
-                if !backendManager.isRunning {
+                if !AppFlags.useNativeSeparation && !backendManager.isRunning {
                     Text("Waiting for backend to start...")
                         .font(.caption)
                         .foregroundStyle(.secondary)
@@ -53,10 +53,11 @@ struct ProcessingView: View {
         }
         .padding(40)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .task {
+        .task(id: project.id) {
             if project.processingStatus == .downloading {
-                // Already downloading from YouTube import
                 await pollDownloadThenSeparate()
+            } else if project.processingStatus == .separating {
+                await observeNativeSeparation()
             }
         }
     }
@@ -77,6 +78,55 @@ struct ProcessingView: View {
         project.failureReason = nil
         projectManager.updateProject(project)
 
+        if AppFlags.useNativeSeparation {
+            projectManager.startNativeSeparation(project: project)
+            Task { await observeNativeSeparation() }
+        } else {
+            runBackendSeparation()
+        }
+    }
+
+    /// Reads `projectManager.separationStates[project.id]` until the run completes.
+    /// The underlying Task lives on ProjectManager, so navigating away and back
+    /// simply re-attaches to the same state.
+    private func observeNativeSeparation() async {
+        await MainActor.run { isProcessing = true }
+
+        while true {
+            try? await Task.sleep(nanoseconds: 200_000_000)
+            guard let state = projectManager.separationStates[project.id] else { continue }
+
+            await MainActor.run {
+                progress = state.progress
+                statusMessage = state.message
+            }
+
+            switch state.status {
+            case .completed:
+                await MainActor.run {
+                    if let refreshed = projectManager.projects.first(where: { $0.id == project.id }) {
+                        project = refreshed
+                    }
+                    projectManager.separationStates.removeValue(forKey: project.id)
+                    isProcessing = false
+                }
+                return
+            case .failed:
+                await MainActor.run {
+                    if let refreshed = projectManager.projects.first(where: { $0.id == project.id }) {
+                        project = refreshed
+                    }
+                    projectManager.separationStates.removeValue(forKey: project.id)
+                    isProcessing = false
+                }
+                return
+            case .separating:
+                continue
+            }
+        }
+    }
+
+    private func runBackendSeparation() {
         Task {
             do {
                 let response = try await api.startSeparation(
@@ -135,6 +185,11 @@ struct ProcessingView: View {
             isProcessing = true
         }
 
+        if AppFlags.useNativeDownload {
+            await observeNativeDownload()
+            return
+        }
+
         // Wait briefly for ImportView to register the jobId.
         var downloadJobId: String?
         for _ in 0..<20 {
@@ -190,6 +245,43 @@ struct ProcessingView: View {
                     return
                 }
             } catch {
+                continue
+            }
+        }
+    }
+
+    /// Watches `projectManager.downloadStates[project.id]` until the native download
+    /// finishes, then triggers separation. No HTTP polling required.
+    private func observeNativeDownload() async {
+        while true {
+            try? await Task.sleep(nanoseconds: 200_000_000)
+            guard let state = projectManager.downloadStates[project.id] else { continue }
+
+            await MainActor.run {
+                progress = state.progress
+                statusMessage = state.message
+            }
+
+            switch state.status {
+            case .completed:
+                await MainActor.run {
+                    if let refreshed = projectManager.projects.first(where: { $0.id == project.id }) {
+                        project = refreshed
+                    }
+                    projectManager.downloadStates.removeValue(forKey: project.id)
+                    startSeparation()
+                }
+                return
+            case .failed:
+                await MainActor.run {
+                    project.processingStatus = .failed
+                    project.failureReason = state.message
+                    projectManager.updateProject(project)
+                    projectManager.downloadStates.removeValue(forKey: project.id)
+                    isProcessing = false
+                }
+                return
+            case .downloading:
                 continue
             }
         }

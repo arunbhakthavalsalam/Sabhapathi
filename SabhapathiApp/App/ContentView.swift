@@ -100,7 +100,7 @@ struct ContentView: View {
     private var backendStatusBadge: some View {
         HStack(spacing: 6) {
             Circle()
-                .fill(backendManager.isRunning ? .green : .red)
+                .fill(statusColor)
                 .frame(width: 8, height: 8)
             Text(backendStatusText)
                 .font(.caption)
@@ -111,7 +111,16 @@ struct ContentView: View {
         .background(.ultraThinMaterial, in: Capsule())
     }
 
+    private var statusColor: Color {
+        if AppFlags.allServicesNative { return .green }
+        return backendManager.isRunning ? .green : .red
+    }
+
     private var backendStatusText: String {
+        if AppFlags.allServicesNative {
+            return "Native (no backend)"
+        }
+
         if backendManager.isRunning {
             return "Backend Ready"
         }

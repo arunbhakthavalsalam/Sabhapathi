@@ -117,6 +117,12 @@ struct ImportView: View {
         let project = projectManager.createProjectForYouTube(url: youtubeURL)
         let url = youtubeURL
 
+        if AppFlags.useNativeDownload {
+            projectManager.startNativeDownload(urlString: url, project: project)
+            dismiss()
+            return
+        }
+
         Task {
             do {
                 let response = try await BackendAPIClient.shared.startDownload(
