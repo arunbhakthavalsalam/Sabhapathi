@@ -5,6 +5,7 @@ import Darwin
 /// Manages the lifecycle of the Python FastAPI backend process.
 final class PythonBackendManager: ObservableObject {
     static let shared = PythonBackendManager()
+    private static let logTimestampFormatter = ISO8601DateFormatter()
 
     @Published var isRunning = false
     @Published var lastError: String?
@@ -175,7 +176,7 @@ final class PythonBackendManager: ObservableObject {
     }
 
     private func appendLog(_ message: String) {
-        let line = "[\(ISO8601DateFormatter().string(from: Date()))] \(message)\n"
+        let line = "[\(Self.logTimestampFormatter.string(from: Date()))] \(message)\n"
         if let data = line.data(using: .utf8) {
             if FileManager.default.fileExists(atPath: logFileURL.path) {
                 if let handle = try? FileHandle(forWritingTo: logFileURL) {

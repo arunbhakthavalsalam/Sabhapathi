@@ -1,10 +1,12 @@
 import Foundation
 import AVFoundation
 import Combine
+import os.log
 
 /// Multi-stem audio playback using AVAudioEngine.
 final class AudioEngineService: ObservableObject {
     static let shared = AudioEngineService()
+    private static let log = Logger(subsystem: "com.sabhapathi.karaoke", category: "AudioEngine")
 
     @Published var isPlaying = false
     @Published var currentTime: TimeInterval = 0
@@ -16,6 +18,11 @@ final class AudioEngineService: ObservableObject {
     private var mixerNodes: [String: AVAudioMixerNode] = [:]
     private var displayLink: Timer?
 
+    /// Absolute offset (in seconds) of the last `scheduleSegment` start frame.
+    /// Added to the running `playerTime.sampleTime` so `currentTime` stays
+    /// accurate after seeking — without this, the seek bar snaps to 0.
+    private var seekOffset: TimeInterval = 0
+
     let stemNames = ["vocals", "drums", "bass", "other"]
 
     func loadStems(from stemSet: StemSet) throws {
@@ -24,6 +31,7 @@ final class AudioEngineService: ObservableObject {
         playerNodes.removeAll()
         audioFiles.removeAll()
         mixerNodes.removeAll()
+        seekOffset = 0
         duration = 0
         currentTime = 0
 
@@ -36,29 +44,40 @@ final class AudioEngineService: ObservableObject {
             ("other", stemSet.other),
         ]
 
-        for (name, url) in stemsToLoad {
-            guard let url else { continue }
+        do {
+            for (name, url) in stemsToLoad {
+                guard let url else { continue }
 
-            let file = try AVAudioFile(forReading: url)
-            let player = AVAudioPlayerNode()
-            let mixer = AVAudioMixerNode()
+                let file = try AVAudioFile(forReading: url)
+                let player = AVAudioPlayerNode()
+                let mixer = AVAudioMixerNode()
 
-            engine.attach(player)
-            engine.attach(mixer)
-            engine.connect(player, to: mixer, format: file.processingFormat)
-            engine.connect(mixer, to: mainMixer, format: file.processingFormat)
+                engine.attach(player)
+                engine.attach(mixer)
+                engine.connect(player, to: mixer, format: file.processingFormat)
+                engine.connect(mixer, to: mainMixer, format: file.processingFormat)
 
-            audioFiles[name] = file
-            playerNodes[name] = player
-            mixerNodes[name] = mixer
+                audioFiles[name] = file
+                playerNodes[name] = player
+                mixerNodes[name] = mixer
 
-            // Set initial duration from first stem
-            if duration == 0 {
-                duration = Double(file.length) / file.processingFormat.sampleRate
+                if duration == 0 {
+                    duration = Double(file.length) / file.processingFormat.sampleRate
+                }
             }
-        }
 
-        try engine.start()
+            try engine.start()
+        } catch {
+            Self.log.error("loadStems failed: \(error.localizedDescription, privacy: .public)")
+            // Roll back so the engine isn't left in a half-wired state on retry.
+            engine.stop()
+            engine.reset()
+            playerNodes.removeAll()
+            audioFiles.removeAll()
+            mixerNodes.removeAll()
+            duration = 0
+            throw error
+        }
     }
 
     func play() {
@@ -67,6 +86,7 @@ final class AudioEngineService: ObservableObject {
             player.scheduleFile(file, at: nil)
             player.play()
         }
+        seekOffset = 0
         isPlaying = true
         startTimeTracking()
     }
@@ -86,10 +106,12 @@ final class AudioEngineService: ObservableObject {
         engine.stop()
         isPlaying = false
         currentTime = 0
+        seekOffset = 0
         stopTimeTracking()
     }
 
     func seek(to time: TimeInterval) {
+        let clamped = max(0, min(time, duration))
         let wasPlaying = isPlaying
 
         for (name, player) in playerNodes {
@@ -97,7 +119,7 @@ final class AudioEngineService: ObservableObject {
             player.stop()
 
             let sampleRate = file.processingFormat.sampleRate
-            let startFrame = AVAudioFramePosition(time * sampleRate)
+            let startFrame = AVAudioFramePosition(clamped * sampleRate)
             let totalFrames = file.length
             guard startFrame < totalFrames else { continue }
 
@@ -114,7 +136,8 @@ final class AudioEngineService: ObservableObject {
             }
         }
 
-        currentTime = time
+        seekOffset = clamped
+        currentTime = clamped
     }
 
     func setVolume(for stem: String, volume: Float) {
@@ -130,9 +153,14 @@ final class AudioEngineService: ObservableObject {
     }
 
     private func startTimeTracking() {
-        displayLink = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { [weak self] _ in
+        stopTimeTracking()
+        let timer = Timer(timeInterval: 0.05, repeats: true) { [weak self] _ in
             self?.updateCurrentTime()
         }
+        // .common keeps the timer firing while menus, sliders, or scroll views
+        // are driving the main runloop — otherwise playback-position UI freezes.
+        RunLoop.main.add(timer, forMode: .common)
+        displayLink = timer
     }
 
     private func stopTimeTracking() {
@@ -146,6 +174,11 @@ final class AudioEngineService: ObservableObject {
               let playerTime = player.playerTime(forNodeTime: nodeTime) else { return }
 
         let sampleRate = audioFiles[name]?.processingFormat.sampleRate ?? 44100
-        currentTime = Double(playerTime.sampleTime) / sampleRate
+        let elapsed = Double(playerTime.sampleTime) / sampleRate
+        let absolute = seekOffset + elapsed
+
+        if absolute.isFinite && absolute >= 0 && absolute <= duration + 0.5 {
+            currentTime = min(absolute, duration)
+        }
     }
 }

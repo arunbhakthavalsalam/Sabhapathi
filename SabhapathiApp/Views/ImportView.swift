@@ -8,6 +8,12 @@ struct ImportView: View {
     @State private var isDroppingFile = false
     @State private var errorMessage: String?
 
+    /// Extensions we copy into a project directly. Demucs (via ffmpeg) can decode
+    /// all of these, and a YouTube fallback may leave any of them on disk.
+    private static let supportedExtensions: Set<String> = [
+        "mp3", "m4a", "mp4", "aac", "wav", "aiff", "aif", "flac", "ogg", "opus", "wma", "webm",
+    ]
+
     var body: some View {
         VStack(spacing: 24) {
             Text("Import Song")
@@ -30,8 +36,11 @@ struct ImportView: View {
                     Image(systemName: "arrow.down.doc")
                         .font(.system(size: 32))
                         .foregroundStyle(.secondary)
-                    Text("Drop MP3 file here")
+                    Text("Drop an audio file here")
                         .font(.headline)
+                    Text("MP3, M4A, WAV, FLAC, AAC, OGG, Opus…")
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
                     Text("or")
                         .foregroundStyle(.tertiary)
                     Button("Choose File...") {
@@ -80,14 +89,22 @@ struct ImportView: View {
 
     private func openFilePicker() {
         let panel = NSOpenPanel()
-        panel.allowedContentTypes = [UTType.mp3, UTType.audio]
+        panel.allowedContentTypes = [UTType.audio, UTType.movie]
         panel.allowsMultipleSelection = true
 
         if panel.runModal() == .OK {
+            var accepted = 0
             for url in panel.urls {
-                _ = projectManager.importMP3(from: url)
+                if Self.supportedExtensions.contains(url.pathExtension.lowercased()) {
+                    _ = projectManager.importAudio(from: url)
+                    accepted += 1
+                }
             }
-            dismiss()
+            if accepted == 0 {
+                errorMessage = "Unsupported format. Try MP3, M4A, WAV, FLAC, AAC, OGG, or Opus."
+            } else {
+                dismiss()
+            }
         }
     }
 
@@ -97,14 +114,15 @@ struct ImportView: View {
                 guard let data = data as? Data,
                       let url = URL(dataRepresentation: data, relativeTo: nil) else { return }
 
-                if url.pathExtension.lowercased() == "mp3" {
+                let ext = url.pathExtension.lowercased()
+                if Self.supportedExtensions.contains(ext) {
                     DispatchQueue.main.async {
-                        _ = projectManager.importMP3(from: url)
+                        _ = projectManager.importAudio(from: url)
                         dismiss()
                     }
                 } else {
                     DispatchQueue.main.async {
-                        errorMessage = "Only MP3 files are supported"
+                        errorMessage = "Unsupported format: .\(ext). Try MP3, M4A, WAV, FLAC, AAC, OGG, or Opus."
                     }
                 }
             }

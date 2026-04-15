@@ -1,5 +1,6 @@
 import AVFoundation
 import Foundation
+import os.log
 
 /// V2 prototype: invokes Python demucs via subprocess against the existing venv,
 /// then mixes drums+bass+other into karaoke.wav using AVAudioFile on the Swift side.
@@ -8,6 +9,7 @@ import Foundation
 /// operation is viable. The Python interpreter path is still external — a later
 /// iteration will bundle a relocatable python-build-standalone runtime.
 final class NativeSeparationService: SeparationService {
+    private static let log = Logger(subsystem: "com.sabhapathi.karaoke", category: "Separation")
     enum SeparationError: Error, LocalizedError {
         case pythonMissing(String)
         case demucsFailed(String)
@@ -27,6 +29,7 @@ final class NativeSeparationService: SeparationService {
     private let pythonPath: String
     private let modelName: String
     private let projectsDir: URL
+    private let device: String
 
     init(
         pythonPath: String = RuntimePaths.python,
@@ -34,6 +37,11 @@ final class NativeSeparationService: SeparationService {
     ) {
         self.pythonPath = pythonPath
         self.modelName = modelName
+        // Power-user override: `SABHAPATHI_DEMUCS_DEVICE=mps` selects the MPS
+        // backend. Default stays "cpu" because demucs' MPS path still silently
+        // falls back on a handful of ops unless PYTORCH_ENABLE_MPS_FALLBACK=1
+        // is set (which we do in pythonProcessEnvironment below).
+        self.device = ProcessInfo.processInfo.environment["SABHAPATHI_DEMUCS_DEVICE"] ?? "cpu"
         let support = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
         self.projectsDir = support
             .appendingPathComponent("Sabhapathi")
@@ -107,15 +115,20 @@ final class NativeSeparationService: SeparationService {
     ) async throws {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: pythonPath)
-        process.environment = RuntimePaths.pythonProcessEnvironment()
+        var env = RuntimePaths.pythonProcessEnvironment()
+        // Lets demucs fall back to CPU for any MPS op that isn't implemented yet.
+        env["PYTORCH_ENABLE_MPS_FALLBACK"] = "1"
+        process.environment = env
         process.arguments = [
             "-u",
             "-m", "demucs.separate",
             "-n", modelName,
             "-o", outputDir,
-            "-d", "cpu",
+            "-d", device,
             inputPath,
         ]
+
+        Self.log.info("demucs start: device=\(self.device, privacy: .public) model=\(self.modelName, privacy: .public)")
 
         let stdoutPipe = Pipe()
         let stderrPipe = Pipe()
@@ -124,15 +137,13 @@ final class NativeSeparationService: SeparationService {
 
         // Demucs writes tqdm progress to stderr.
         let percentRegex = try NSRegularExpression(pattern: #"(\d{1,3})%"#)
-        var stderrBuffer = Data()
-        let stderrLock = NSLock()
+        let stderrBuffer = DataBox()
+        let stdoutBuffer = DataBox()
 
         stderrPipe.fileHandleForReading.readabilityHandler = { handle in
             let data = handle.availableData
             guard !data.isEmpty else { return }
-            stderrLock.lock()
             stderrBuffer.append(data)
-            stderrLock.unlock()
 
             if let text = String(data: data, encoding: .utf8) {
                 let ns = text as NSString
@@ -150,14 +161,10 @@ final class NativeSeparationService: SeparationService {
             }
         }
 
-        var stdoutBuffer = Data()
-        let stdoutLock = NSLock()
         stdoutPipe.fileHandleForReading.readabilityHandler = { handle in
             let data = handle.availableData
             guard !data.isEmpty else { return }
-            stdoutLock.lock()
             stdoutBuffer.append(data)
-            stdoutLock.unlock()
         }
 
         try process.run()
@@ -169,13 +176,10 @@ final class NativeSeparationService: SeparationService {
                 if proc.terminationStatus == 0 {
                     continuation.resume()
                 } else {
-                    stderrLock.lock()
-                    let err = String(data: stderrBuffer, encoding: .utf8) ?? ""
-                    stderrLock.unlock()
-                    stdoutLock.lock()
-                    let out = String(data: stdoutBuffer, encoding: .utf8) ?? ""
-                    stdoutLock.unlock()
+                    let err = String(data: stderrBuffer.value, encoding: .utf8) ?? ""
+                    let out = String(data: stdoutBuffer.value, encoding: .utf8) ?? ""
                     let msg = err.isEmpty ? out : err
+                    Self.log.error("demucs exit \(proc.terminationStatus): \(msg, privacy: .public)")
                     continuation.resume(throwing: SeparationError.demucsFailed(
                         msg.trimmingCharacters(in: .whitespacesAndNewlines)
                     ))
@@ -187,7 +191,12 @@ final class NativeSeparationService: SeparationService {
     // MARK: - Karaoke mix
 
     /// Sums PCM samples from the given stems into a single WAV file.
-    /// Assumes all stems share the same format (demucs always emits 44.1kHz stereo float32).
+    ///
+    /// Streams in fixed-size chunks rather than loading full stems into memory,
+    /// so a 30-minute source doesn't spike to ~1 GB of RAM during the mix. Also
+    /// validates that every stem shares the same sample rate + channel count —
+    /// demucs always emits 44.1 kHz stereo, but we check anyway so a future
+    /// model swap can't silently produce garbage.
     private func mixKaraoke(inputs: [URL], output: URL) throws {
         guard !inputs.isEmpty else {
             throw SeparationError.mixFailed("no inputs")
@@ -195,50 +204,26 @@ final class NativeSeparationService: SeparationService {
 
         let readers = try inputs.map { try AVAudioFile(forReading: $0) }
         let processingFormat = readers[0].processingFormat
-        let frameCount = AVAudioFrameCount(readers[0].length)
 
-        guard let mixBuffer = AVAudioPCMBuffer(
-            pcmFormat: processingFormat,
-            frameCapacity: frameCount
-        ) else {
-            throw SeparationError.mixFailed("could not allocate mix buffer")
+        // Validate uniformity.
+        for reader in readers.dropFirst() {
+            let f = reader.processingFormat
+            guard f.sampleRate == processingFormat.sampleRate,
+                  f.channelCount == processingFormat.channelCount else {
+                throw SeparationError.mixFailed(
+                    "Stem format mismatch: \(f.sampleRate) Hz / \(f.channelCount) ch " +
+                    "vs \(processingFormat.sampleRate) Hz / \(processingFormat.channelCount) ch"
+                )
+            }
         }
-        mixBuffer.frameLength = frameCount
 
-        guard let channelData = mixBuffer.floatChannelData else {
-            throw SeparationError.mixFailed("mix buffer has no float channel data")
+        let totalFrames = readers.map(\.length).max() ?? 0
+        guard totalFrames > 0 else {
+            throw SeparationError.mixFailed("empty stems")
         }
+
         let channelCount = Int(processingFormat.channelCount)
-        for ch in 0..<channelCount {
-            memset(channelData[ch], 0, Int(frameCount) * MemoryLayout<Float>.size)
-        }
-
-        for reader in readers {
-            guard let buffer = AVAudioPCMBuffer(
-                pcmFormat: reader.processingFormat,
-                frameCapacity: AVAudioFrameCount(reader.length)
-            ) else { continue }
-            try reader.read(into: buffer)
-
-            guard let src = buffer.floatChannelData else { continue }
-            let frames = min(Int(buffer.frameLength), Int(frameCount))
-            for ch in 0..<channelCount {
-                let dst = channelData[ch]
-                let s = src[ch]
-                for i in 0..<frames {
-                    dst[i] += s[i]
-                }
-            }
-        }
-
-        // Float32 can exceed [-1, 1] after summing; clamp to avoid wrap on 16-bit writers.
-        for ch in 0..<channelCount {
-            let dst = channelData[ch]
-            for i in 0..<Int(frameCount) {
-                if dst[i] > 1.0 { dst[i] = 1.0 }
-                else if dst[i] < -1.0 { dst[i] = -1.0 }
-            }
-        }
+        let chunkFrames: AVAudioFrameCount = 1 << 15 // ~32k frames ≈ 0.74 s at 44.1 kHz
 
         try? FileManager.default.removeItem(at: output)
         let settings: [String: Any] = [
@@ -251,6 +236,75 @@ final class NativeSeparationService: SeparationService {
             AVLinearPCMIsNonInterleaved: false,
         ]
         let outFile = try AVAudioFile(forWriting: output, settings: settings)
-        try outFile.write(from: mixBuffer)
+
+        guard let mixBuffer = AVAudioPCMBuffer(
+            pcmFormat: processingFormat,
+            frameCapacity: chunkFrames
+        ) else {
+            throw SeparationError.mixFailed("could not allocate chunk buffer")
+        }
+
+        let stemBuffers: [AVAudioPCMBuffer] = try readers.map { reader in
+            guard let buf = AVAudioPCMBuffer(
+                pcmFormat: reader.processingFormat,
+                frameCapacity: chunkFrames
+            ) else {
+                throw SeparationError.mixFailed("could not allocate stem buffer")
+            }
+            return buf
+        }
+
+        var remaining = totalFrames
+        while remaining > 0 {
+            let thisChunk = AVAudioFrameCount(min(Int64(chunkFrames), remaining))
+            mixBuffer.frameLength = thisChunk
+
+            guard let dst = mixBuffer.floatChannelData else {
+                throw SeparationError.mixFailed("mix buffer has no float channel data")
+            }
+            for ch in 0..<channelCount {
+                memset(dst[ch], 0, Int(thisChunk) * MemoryLayout<Float>.size)
+            }
+
+            for (reader, buf) in zip(readers, stemBuffers) {
+                buf.frameLength = 0
+                do {
+                    try reader.read(into: buf, frameCount: thisChunk)
+                } catch {
+                    // Past EOF on a shorter stem: keep going, treat as silence.
+                    continue
+                }
+                guard let src = buf.floatChannelData else { continue }
+                let frames = min(Int(buf.frameLength), Int(thisChunk))
+                for ch in 0..<channelCount {
+                    let d = dst[ch]
+                    let s = src[ch]
+                    for i in 0..<frames {
+                        d[i] += s[i]
+                    }
+                }
+            }
+
+            // Clamp to [-1, 1] so the 16-bit writer doesn't wrap on clipped peaks.
+            for ch in 0..<channelCount {
+                let d = dst[ch]
+                for i in 0..<Int(thisChunk) {
+                    if d[i] > 1.0 { d[i] = 1.0 }
+                    else if d[i] < -1.0 { d[i] = -1.0 }
+                }
+            }
+
+            try outFile.write(from: mixBuffer)
+            remaining -= Int64(thisChunk)
+        }
     }
+}
+
+/// Lock-protected `Data` accumulator shared between subprocess readability
+/// handlers and the termination continuation.
+private final class DataBox: @unchecked Sendable {
+    private let lock = NSLock()
+    private var _value = Data()
+    var value: Data { lock.lock(); defer { lock.unlock() }; return _value }
+    func append(_ d: Data) { lock.lock(); _value.append(d); lock.unlock() }
 }

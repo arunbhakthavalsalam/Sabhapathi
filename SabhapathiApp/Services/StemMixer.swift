@@ -43,6 +43,8 @@ final class StemMixer: ObservableObject {
     }
 
     /// Apply chorus mode: mix vocals back at reduced volume during chorus sections.
+    /// Outside a chorus section, restores the user's vocals slider + mute state
+    /// (previously this always forced vocals to 0, ignoring a non-muted slider).
     func applyChorusMode(
         currentTime: TimeInterval,
         chorusSections: [ChorusSection]
@@ -53,8 +55,9 @@ final class StemMixer: ObservableObject {
 
         if inChorus {
             audioEngine.setVolume(for: "vocals", volume: chorusVocalVolume)
-        } else if muted["vocals", default: true] {
-            audioEngine.setVolume(for: "vocals", volume: 0.0)
+        } else {
+            let restored = muted["vocals", default: true] ? 0.0 : volumes["vocals", default: 0.0]
+            audioEngine.setVolume(for: "vocals", volume: restored)
         }
     }
 

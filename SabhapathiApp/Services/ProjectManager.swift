@@ -1,9 +1,11 @@
 import Foundation
 import Combine
+import os.log
 
 /// Manages karaoke projects on disk.
 final class ProjectManager: ObservableObject {
     static let shared = ProjectManager()
+    private static let log = Logger(subsystem: "com.sabhapathi.karaoke", category: "ProjectManager")
 
     @Published var projects: [KaraokeProject] = []
 
@@ -43,8 +45,17 @@ final class ProjectManager: ObservableObject {
         loadProjects()
     }
 
-    func importMP3(from sourceURL: URL) -> KaraokeProject {
+    /// Import a local audio file into a new project. Preserves the source
+    /// extension so `original.<ext>` retains its original codec — demucs/ffmpeg
+    /// can decode all the formats ImportView accepts without a re-encode pass.
+    ///
+    /// Returns nil if the file couldn't be copied; the project isn't created.
+    @discardableResult
+    func importAudio(from sourceURL: URL) -> KaraokeProject? {
         let title = sourceURL.deletingPathExtension().lastPathComponent
+        let ext = sourceURL.pathExtension.lowercased().isEmpty
+            ? "mp3"
+            : sourceURL.pathExtension.lowercased()
         let song = Song(
             title: title,
             originalFilePath: sourceURL.path,
@@ -52,19 +63,38 @@ final class ProjectManager: ObservableObject {
         )
         var project = KaraokeProject(song: song)
 
-        // Copy file to project directory
         let projectDir = project.projectDirectory
-        try? FileManager.default.createDirectory(
-            at: projectDir, withIntermediateDirectories: true
-        )
+        do {
+            try FileManager.default.createDirectory(
+                at: projectDir, withIntermediateDirectories: true
+            )
+        } catch {
+            Self.log.error("Failed to create project dir: \(error.localizedDescription, privacy: .public)")
+            return nil
+        }
 
-        let destURL = projectDir.appendingPathComponent("original.mp3")
-        try? FileManager.default.copyItem(at: sourceURL, to: destURL)
+        let destURL = projectDir.appendingPathComponent("original.\(ext)")
+        do {
+            if FileManager.default.fileExists(atPath: destURL.path) {
+                try FileManager.default.removeItem(at: destURL)
+            }
+            try FileManager.default.copyItem(at: sourceURL, to: destURL)
+        } catch {
+            Self.log.error("Failed to copy \(sourceURL.path, privacy: .public): \(error.localizedDescription, privacy: .public)")
+            try? FileManager.default.removeItem(at: projectDir)
+            return nil
+        }
         project.song.originalFilePath = destURL.path
 
         projects.append(project)
         saveProjects()
         return project
+    }
+
+    /// Back-compat shim for any caller that still hits the old name.
+    @discardableResult
+    func importMP3(from sourceURL: URL) -> KaraokeProject? {
+        importAudio(from: sourceURL)
     }
 
     func createProjectForYouTube(url: String) -> KaraokeProject {
@@ -224,13 +254,21 @@ final class ProjectManager: ObservableObject {
     }
 
     private func loadProjects() {
-        guard FileManager.default.fileExists(atPath: manifestFile.path),
-              let data = try? Data(contentsOf: manifestFile) else { return }
-        projects = (try? JSONDecoder().decode([KaraokeProject].self, from: data)) ?? []
+        guard FileManager.default.fileExists(atPath: manifestFile.path) else { return }
+        do {
+            let data = try Data(contentsOf: manifestFile)
+            projects = try JSONDecoder().decode([KaraokeProject].self, from: data)
+        } catch {
+            Self.log.error("Failed to load projects manifest: \(error.localizedDescription, privacy: .public)")
+        }
     }
 
     private func saveProjects() {
-        let data = try? JSONEncoder().encode(projects)
-        try? data?.write(to: manifestFile, options: .atomic)
+        do {
+            let data = try JSONEncoder().encode(projects)
+            try data.write(to: manifestFile, options: .atomic)
+        } catch {
+            Self.log.error("Failed to save projects manifest: \(error.localizedDescription, privacy: .public)")
+        }
     }
 }
