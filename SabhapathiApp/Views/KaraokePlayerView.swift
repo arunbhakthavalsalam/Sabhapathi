@@ -83,9 +83,9 @@ struct KaraokePlayerView: View {
     private var backgroundGradient: some View {
         LinearGradient(
             colors: [
-                Color(red: 0.07, green: 0.08, blue: 0.14),
-                Color(red: 0.14, green: 0.10, blue: 0.22),
-                Color(red: 0.05, green: 0.06, blue: 0.12),
+                Color(red: 0.97, green: 0.96, blue: 1.00),
+                Color(red: 0.93, green: 0.94, blue: 0.99),
+                Color(red: 0.99, green: 0.95, blue: 0.97),
             ],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
@@ -101,13 +101,13 @@ struct KaraokePlayerView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(project.song.title)
                     .font(.system(.title2, design: .rounded).weight(.semibold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.primary)
                     .lineLimit(1)
 
                 if !project.song.artist.isEmpty {
                     Text(project.song.artist)
                         .font(.subheadline)
-                        .foregroundStyle(.white.opacity(0.65))
+                        .foregroundStyle(.secondary)
                         .lineLimit(1)
                 }
             }
@@ -168,7 +168,7 @@ struct KaraokePlayerView: View {
             HStack {
                 Text(formatTime(audioEngine.currentTime))
                     .font(.caption.monospacedDigit())
-                    .foregroundStyle(.white.opacity(0.7))
+                    .foregroundStyle(.secondary)
                     .frame(width: 44, alignment: .leading)
 
                 WaveformView(
@@ -184,17 +184,16 @@ struct KaraokePlayerView: View {
                         HStack(spacing: 8) {
                             ProgressView()
                                 .controlSize(.small)
-                                .tint(.white.opacity(0.6))
                             Text("Analyzing waveform…")
                                 .font(.caption)
-                                .foregroundStyle(.white.opacity(0.5))
+                                .foregroundStyle(.secondary)
                         }
                     }
                 }
 
                 Text(formatTime(audioEngine.duration))
                     .font(.caption.monospacedDigit())
-                    .foregroundStyle(.white.opacity(0.7))
+                    .foregroundStyle(.secondary)
                     .frame(width: 44, alignment: .trailing)
             }
 
@@ -216,7 +215,7 @@ struct KaraokePlayerView: View {
             } label: {
                 Image(systemName: "gobackward.10")
                     .font(.system(size: 22, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.85))
+                    .foregroundStyle(.primary)
             }
             .buttonStyle(.plain)
 
@@ -256,7 +255,7 @@ struct KaraokePlayerView: View {
             } label: {
                 Image(systemName: "goforward.10")
                     .font(.system(size: 22, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.85))
+                    .foregroundStyle(.primary)
             }
             .buttonStyle(.plain)
 

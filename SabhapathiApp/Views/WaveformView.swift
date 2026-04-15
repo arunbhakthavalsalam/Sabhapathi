@@ -22,20 +22,12 @@ struct WaveformView: View {
 
             ZStack(alignment: .leading) {
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .fill(
-                        LinearGradient(
-                            colors: [
-                                Color.black.opacity(0.45),
-                                Color.black.opacity(0.20),
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
+                    .fill(Color(nsColor: .controlBackgroundColor))
                     .overlay(
                         RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .stroke(Color.white.opacity(0.08), lineWidth: 1)
+                            .stroke(Color.secondary.opacity(0.25), lineWidth: 1)
                     )
+                    .shadow(color: .black.opacity(0.06), radius: 4, y: 2)
 
                 Canvas { context, size in
                     draw(in: context, size: size, progress: progress)
@@ -45,9 +37,9 @@ struct WaveformView: View {
 
                 // Playhead
                 Rectangle()
-                    .fill(Color.white)
+                    .fill(Color.primary.opacity(0.85))
                     .frame(width: 2)
-                    .shadow(color: Color.white.opacity(0.55), radius: 4)
+                    .shadow(color: Color.black.opacity(0.25), radius: 2)
                     .offset(x: max(0, width * progress - 1))
                     .allowsHitTesting(false)
             }
@@ -103,7 +95,7 @@ struct WaveformView: View {
         let r = Self.instrumentalRGB.r + (Self.vocalRGB.r - Self.instrumentalRGB.r) * Double(t)
         let g = Self.instrumentalRGB.g + (Self.vocalRGB.g - Self.instrumentalRGB.g) * Double(t)
         let b = Self.instrumentalRGB.b + (Self.vocalRGB.b - Self.instrumentalRGB.b) * Double(t)
-        let alpha: Double = played ? 1.0 : 0.45
+        let alpha: Double = played ? 1.0 : 0.55
         return Color(red: r, green: g, blue: b, opacity: alpha)
     }
 }
