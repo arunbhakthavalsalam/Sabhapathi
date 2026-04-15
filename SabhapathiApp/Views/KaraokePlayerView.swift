@@ -13,6 +13,9 @@ struct KaraokePlayerView: View {
     @State private var showExportAlert = false
     @State private var exportAlertTitle = ""
     @State private var exportAlertMessage = ""
+    @State private var instrumentalPeaks: [Float] = []
+    @State private var vocalPeaks: [Float] = []
+    @State private var peaksLoadingForProject: UUID?
 
     private let audioExporter = AudioExporter()
 
@@ -22,70 +25,42 @@ struct KaraokePlayerView: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            // Song header
-            HStack {
-                VStack(alignment: .leading) {
-                    Text(project.song.title)
-                        .font(.title2.bold())
-                    if !project.song.artist.isEmpty {
-                        Text(project.song.artist)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
+        ZStack {
+            backgroundGradient
+                .ignoresSafeArea()
+
+            VStack(spacing: 0) {
+                header
+                    .padding(.horizontal, 24)
+                    .padding(.top, 20)
+                    .padding(.bottom, 16)
+
+                // Main content area
+                HSplitView {
+                    if showLyrics {
+                        LyricsDisplayView(
+                            lyrics: lyricsService.lyrics,
+                            currentTime: audioEngine.currentTime
+                        )
+                        .frame(minWidth: 300)
+                    }
+
+                    if showStemMixer {
+                        StemMixerView(stemMixer: stemMixer)
+                            .frame(width: 280)
                     }
                 }
-                Spacer()
 
-                // View toggles
-                HStack(spacing: 8) {
-                    Button(isExporting ? "Saving..." : "Save Karaoke") {
-                        saveKaraoke()
-                    }
-                    .disabled(isExporting)
-                    .buttonStyle(.borderedProminent)
-
-                    Toggle(isOn: $showLyrics) {
-                        Label("Lyrics", systemImage: "text.quote")
-                    }
-                    .toggleStyle(.button)
-
-                    Toggle(isOn: $showStemMixer) {
-                        Label("Mixer", systemImage: "slider.horizontal.3")
-                    }
-                    .toggleStyle(.button)
-                }
+                playbackPanel
+                    .padding(.horizontal, 24)
+                    .padding(.top, 14)
+                    .padding(.bottom, 20)
             }
-            .padding()
-
-            Divider()
-
-            // Main content area
-            HSplitView {
-                // Lyrics display
-                if showLyrics {
-                    LyricsDisplayView(
-                        lyrics: lyricsService.lyrics,
-                        currentTime: audioEngine.currentTime
-                    )
-                    .frame(minWidth: 300)
-                }
-
-                // Stem mixer
-                if showStemMixer {
-                    StemMixerView(stemMixer: stemMixer)
-                        .frame(width: 280)
-                }
-            }
-
-            Divider()
-
-            // Transport controls
-            transportControls
-                .padding()
         }
         .onAppear {
             loadAudio()
             fetchLyrics()
+            loadWaveformPeaks()
         }
         .onDisappear {
             audioEngine.stop()
@@ -103,64 +78,195 @@ struct KaraokePlayerView: View {
         }
     }
 
-    private var transportControls: some View {
-        VStack(spacing: 8) {
-            // Seek bar
+    // MARK: - Background
+
+    private var backgroundGradient: some View {
+        LinearGradient(
+            colors: [
+                Color(red: 0.07, green: 0.08, blue: 0.14),
+                Color(red: 0.14, green: 0.10, blue: 0.22),
+                Color(red: 0.05, green: 0.06, blue: 0.12),
+            ],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+    }
+
+    // MARK: - Header
+
+    private var header: some View {
+        HStack(alignment: .center, spacing: 16) {
+            artworkBadge
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(project.song.title)
+                    .font(.system(.title2, design: .rounded).weight(.semibold))
+                    .foregroundStyle(.white)
+                    .lineLimit(1)
+
+                if !project.song.artist.isEmpty {
+                    Text(project.song.artist)
+                        .font(.subheadline)
+                        .foregroundStyle(.white.opacity(0.65))
+                        .lineLimit(1)
+                }
+            }
+
+            Spacer()
+
+            HStack(spacing: 10) {
+                Button {
+                    saveKaraoke()
+                } label: {
+                    Label(isExporting ? "Saving…" : "Save Karaoke",
+                          systemImage: "square.and.arrow.down.fill")
+                }
+                .disabled(isExporting)
+                .buttonStyle(.borderedProminent)
+                .tint(.pink)
+
+                Toggle(isOn: $showLyrics) {
+                    Label("Lyrics", systemImage: "text.quote")
+                }
+                .toggleStyle(.button)
+
+                Toggle(isOn: $showStemMixer) {
+                    Label("Mixer", systemImage: "slider.horizontal.3")
+                }
+                .toggleStyle(.button)
+            }
+            .labelStyle(.titleAndIcon)
+            .controlSize(.regular)
+        }
+    }
+
+    private var artworkBadge: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            Color(red: 0.45, green: 0.22, blue: 0.78),
+                            Color(red: 0.92, green: 0.30, blue: 0.55),
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .shadow(color: .black.opacity(0.35), radius: 10, y: 6)
+            Image(systemName: "music.mic")
+                .font(.system(size: 26, weight: .semibold))
+                .foregroundStyle(.white)
+        }
+        .frame(width: 56, height: 56)
+    }
+
+    // MARK: - Playback panel
+
+    private var playbackPanel: some View {
+        VStack(spacing: 12) {
             HStack {
                 Text(formatTime(audioEngine.currentTime))
                     .font(.caption.monospacedDigit())
-                    .frame(width: 50)
+                    .foregroundStyle(.white.opacity(0.7))
+                    .frame(width: 44, alignment: .leading)
 
-                Slider(
-                    value: Binding(
-                        get: { audioEngine.currentTime },
-                        set: { audioEngine.seek(to: $0) }
-                    ),
-                    in: 0...max(audioEngine.duration, 1)
+                WaveformView(
+                    instrumentalPeaks: instrumentalPeaks,
+                    vocalPeaks: vocalPeaks,
+                    currentTime: audioEngine.currentTime,
+                    duration: audioEngine.duration,
+                    onSeek: { audioEngine.seek(to: $0) }
                 )
+                .frame(height: 64)
+                .overlay(alignment: .center) {
+                    if instrumentalPeaks.isEmpty && vocalPeaks.isEmpty {
+                        HStack(spacing: 8) {
+                            ProgressView()
+                                .controlSize(.small)
+                                .tint(.white.opacity(0.6))
+                            Text("Analyzing waveform…")
+                                .font(.caption)
+                                .foregroundStyle(.white.opacity(0.5))
+                        }
+                    }
+                }
 
                 Text(formatTime(audioEngine.duration))
                     .font(.caption.monospacedDigit())
-                    .frame(width: 50)
+                    .foregroundStyle(.white.opacity(0.7))
+                    .frame(width: 44, alignment: .trailing)
             }
 
-            // Play/Pause controls
-            HStack(spacing: 20) {
-                Button {
-                    audioEngine.seek(to: max(audioEngine.currentTime - 10, 0))
-                } label: {
-                    Image(systemName: "gobackward.10")
-                        .font(.title2)
+            HStack {
+                WaveformLegend()
+                Spacer()
+            }
+
+            transportRow
+        }
+    }
+
+    private var transportRow: some View {
+        HStack(spacing: 18) {
+            Spacer()
+
+            Button {
+                audioEngine.seek(to: max(audioEngine.currentTime - 10, 0))
+            } label: {
+                Image(systemName: "gobackward.10")
+                    .font(.system(size: 22, weight: .medium))
+                    .foregroundStyle(.white.opacity(0.85))
+            }
+            .buttonStyle(.plain)
+
+            Button {
+                if audioEngine.isPlaying {
+                    audioEngine.pause()
+                } else {
+                    audioEngine.play()
                 }
-                .buttonStyle(.plain)
-
-                Button {
-                    if audioEngine.isPlaying {
-                        audioEngine.pause()
-                    } else {
-                        audioEngine.play()
-                    }
-                } label: {
-                    Image(systemName: audioEngine.isPlaying ? "pause.circle.fill" : "play.circle.fill")
-                        .font(.system(size: 44))
+            } label: {
+                ZStack {
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                colors: [
+                                    Color(red: 1.00, green: 0.36, blue: 0.60),
+                                    Color(red: 0.78, green: 0.24, blue: 0.85),
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .shadow(color: Color(red: 0.9, green: 0.3, blue: 0.6).opacity(0.45),
+                                radius: 12, y: 4)
+                    Image(systemName: audioEngine.isPlaying ? "pause.fill" : "play.fill")
+                        .font(.system(size: 22, weight: .bold))
+                        .foregroundStyle(.white)
+                        .offset(x: audioEngine.isPlaying ? 0 : 2)
                 }
-                .buttonStyle(.plain)
-                .keyboardShortcut(.space, modifiers: [])
+                .frame(width: 54, height: 54)
+            }
+            .buttonStyle(.plain)
+            .keyboardShortcut(.space, modifiers: [])
 
-                Button {
-                    audioEngine.seek(to: min(audioEngine.currentTime + 10, audioEngine.duration))
-                } label: {
-                    Image(systemName: "goforward.10")
-                        .font(.title2)
-                }
-                .buttonStyle(.plain)
+            Button {
+                audioEngine.seek(to: min(audioEngine.currentTime + 10, audioEngine.duration))
+            } label: {
+                Image(systemName: "goforward.10")
+                    .font(.system(size: 22, weight: .medium))
+                    .foregroundStyle(.white.opacity(0.85))
+            }
+            .buttonStyle(.plain)
 
-                Spacer().frame(width: 40)
+            Spacer()
 
-                // Quick presets
+            HStack(spacing: 8) {
                 Button("Karaoke") { stemMixer.resetToKaraoke() }
                     .buttonStyle(.bordered)
                     .controlSize(.small)
+                    .tint(.pink)
 
                 Button("Original") { stemMixer.resetToOriginal() }
                     .buttonStyle(.bordered)
@@ -168,6 +274,8 @@ struct KaraokePlayerView: View {
             }
         }
     }
+
+    // MARK: - Loading
 
     private func loadAudio() {
         guard let stemSet = project.stemSet else { return }
@@ -180,6 +288,38 @@ struct KaraokePlayerView: View {
             _ = await lyricsService.fetchLyrics(for: project)
         }
     }
+
+    private func loadWaveformPeaks() {
+        guard let stemSet = project.stemSet else { return }
+        // Guard against duplicate loads when the view re-appears for the same project.
+        guard peaksLoadingForProject != project.id else { return }
+        peaksLoadingForProject = project.id
+        instrumentalPeaks = []
+        vocalPeaks = []
+
+        let vocalsURL = stemSet.vocals
+        // Prefer the pre-mixed karaoke stem for the instrumental layer; if it's
+        // missing (older projects), fall back to `other` — drums+bass alone
+        // paints too sparse a picture to be useful.
+        let instrumentalURL = stemSet.karaoke ?? stemSet.other
+
+        Task { @MainActor in
+            async let instrumentalTask: [Float] = {
+                guard let url = instrumentalURL else { return [] }
+                return await WaveformService.peaks(for: url)
+            }()
+            async let vocalsTask: [Float] = {
+                guard let url = vocalsURL else { return [] }
+                return await WaveformService.peaks(for: url)
+            }()
+
+            let (inst, voc) = await (instrumentalTask, vocalsTask)
+            self.instrumentalPeaks = inst
+            self.vocalPeaks = voc
+        }
+    }
+
+    // MARK: - Export
 
     private func saveKaraoke() {
         let panel = NSSavePanel()
@@ -217,6 +357,7 @@ struct KaraokePlayerView: View {
     }
 
     private func formatTime(_ time: TimeInterval) -> String {
+        guard time.isFinite, time >= 0 else { return "0:00" }
         let minutes = Int(time) / 60
         let seconds = Int(time) % 60
         return String(format: "%d:%02d", minutes, seconds)

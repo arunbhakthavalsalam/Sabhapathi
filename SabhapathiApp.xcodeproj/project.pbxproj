@@ -33,6 +33,8 @@
 		A100200000000000000020000 /* NativeDownloadService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200200000000000000020000 /* NativeDownloadService.swift */; };
 		A100210000000000000021000 /* NativeLyricsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200210000000000000021000 /* NativeLyricsService.swift */; };
 		A100220000000000000022000 /* RuntimePaths.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200220000000000000022000 /* RuntimePaths.swift */; };
+		A100260000000000000026000 /* WaveformService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200260000000000000026000 /* WaveformService.swift */; };
+		A100270000000000000027000 /* WaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200270000000000000027000 /* WaveformView.swift */; };
 		A100230000000000000023000 /* yt-dlp_macos in Resources */ = {isa = PBXBuildFile; fileRef = A200230000000000000023000 /* yt-dlp_macos */; };
 		A100240000000000000024000 /* ffmpeg in Resources */ = {isa = PBXBuildFile; fileRef = A200240000000000000024000 /* ffmpeg */; };
 		A100250000000000000025000 /* whisper_to_lrc.py in Resources */ = {isa = PBXBuildFile; fileRef = A200250000000000000025000 /* whisper_to_lrc.py */; };
@@ -71,6 +73,8 @@
 		A200200000000000000020000 /* NativeDownloadService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeDownloadService.swift; sourceTree = "<group>"; };
 		A200210000000000000021000 /* NativeLyricsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeLyricsService.swift; sourceTree = "<group>"; };
 		A200220000000000000022000 /* RuntimePaths.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimePaths.swift; sourceTree = "<group>"; };
+		A200260000000000000026000 /* WaveformService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveformService.swift; sourceTree = "<group>"; };
+		A200270000000000000027000 /* WaveformView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveformView.swift; sourceTree = "<group>"; };
 		A200230000000000000023000 /* yt-dlp_macos */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = "yt-dlp_macos"; sourceTree = SOURCE_ROOT; };
 		A200240000000000000024000 /* ffmpeg */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = ffmpeg; sourceTree = SOURCE_ROOT; };
 		A200250000000000000025000 /* whisper_to_lrc.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; name = whisper_to_lrc.py; path = PythonBackend/scripts/whisper_to_lrc.py; sourceTree = SOURCE_ROOT; };
@@ -149,6 +153,7 @@
 				A20009000000000000000009 /* LyricsDisplayView.swift */,
 				A2000A00000000000000000A /* ChorusSectionEditor.swift */,
 				A2000B00000000000000000B /* SettingsView.swift */,
+				A200270000000000000027000 /* WaveformView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -171,6 +176,7 @@
 				A200200000000000000020000 /* NativeDownloadService.swift */,
 				A200210000000000000021000 /* NativeLyricsService.swift */,
 				A200220000000000000022000 /* RuntimePaths.swift */,
+				A200260000000000000026000 /* WaveformService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -325,6 +331,8 @@
 				A100200000000000000020000 /* NativeDownloadService.swift in Sources */,
 				A100210000000000000021000 /* NativeLyricsService.swift in Sources */,
 				A100220000000000000022000 /* RuntimePaths.swift in Sources */,
+				A100260000000000000026000 /* WaveformService.swift in Sources */,
+				A100270000000000000027000 /* WaveformView.swift in Sources */,
 				A10014000000000000000014 /* KaraokeProject.swift in Sources */,
 				A10015000000000000000015 /* Song.swift in Sources */,
 				A10016000000000000000016 /* StemSet.swift in Sources */,
