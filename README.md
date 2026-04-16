@@ -45,6 +45,7 @@ Sabhapathi/
 │   │   ├── LibraryView.swift          # Sidebar
 │   │   ├── StemMixerView.swift
 │   │   ├── LyricsDisplayView.swift
+│   │   ├── WaveformView.swift         # Scrubber with vocal heat-map
 │   │   ├── ChorusSectionEditor.swift
 │   │   └── SettingsView.swift
 │   │
@@ -59,6 +60,7 @@ Sabhapathi/
 │   │   ├── NativeLyricsService.swift
 │   │   ├── AudioEngineService.swift   # AVAudioEngine, 4 stems
 │   │   ├── StemMixer.swift            # Volume/mute + chorus mixback
+│   │   ├── WaveformService.swift      # Async peak extraction for scrubber
 │   │   ├── LRCParser.swift
 │   │   ├── ProjectManager.swift       # Persistence + hoisted progress state
 │   │   ├── AudioExporter.swift        # Mix stems to MP3 via ffmpeg
@@ -158,10 +160,11 @@ Python interpreter resolution order (`RuntimePaths.python`):
 1. **Import** — drag-drop any common audio format (MP3, M4A, WAV, FLAC, AAC, OGG, Opus, AIFF, WebM), file picker (Cmd+O), or paste a YouTube URL. The source extension is preserved on disk so there's no lossy re-encode before separation.
 2. **Vocal separation** — Demucs `htdemucs`. Progress parsed from the tqdm stream. Drums+bass+other are mixed to `karaoke.wav` via a streaming chunked mixer in `NativeSeparationService` — memory stays bounded even for long tracks, and stem-format mismatches are caught before writing. Device defaults to CPU; set `SABHAPATHI_DEMUCS_DEVICE=mps` to enable the MPS backend (with `PYTORCH_ENABLE_MPS_FALLBACK=1` wired automatically).
 3. **Karaoke playback** — 4 stem players, per-stem volume + mute, transport controls, spacebar toggles play/pause, Karaoke/Original presets. Seek position tracks accurately after a scrub (seek offset is added to the running player-time), and the time-tracking timer runs on `.common` runloop mode so the play-head doesn't freeze during menus or sliders.
-4. **Synced lyrics** — LRCLib first, falls back to Whisper if the track isn't in the database. The LRC parser handles BOMs, metadata tags, multi-timestamp lines (`[00:12.00][01:24.00]Refrain`), and `mm:ss:xxx` sub-second separators. Auto-scroll with highlighted current line.
-5. **Chorus mode** — mark start/end during playback; vocals mix back at configurable volume (-6 dB default) through those regions. Outside chorus, the user's own vocals slider is respected (no more "stuck at 0").
-6. **Export** — karaoke MP3 (192 kbps default) or WAV, MP3 + LRC pair, chorus-mixback export, or individual stems. The ffmpeg runner drains stderr concurrently so long renders can't deadlock on a saturated pipe; the last ~8 lines of ffmpeg's error output surface on failure.
-7. **Progress survives navigation** — download/separation state is hoisted into `ProjectManager`, so jumping between projects in the sidebar doesn't abort the job or lose the progress bar.
+4. **Waveform scrubber with vocal heat-map** — `WaveformService` decodes the vocals and the pre-mixed instrumental off the main actor, downsampling each to ~600 peak bins. `WaveformView` renders bars whose height is combined magnitude and whose hue interpolates blue (instrumental) → pink (vocals) at each bin, so you can literally see where the singing lives. Drag anywhere on the waveform to seek.
+5. **Synced lyrics** — LRCLib first, falls back to Whisper if the track isn't in the database. The LRC parser handles BOMs, metadata tags, multi-timestamp lines (`[00:12.00][01:24.00]Refrain`), and `mm:ss:xxx` sub-second separators. Auto-scroll with highlighted current line.
+6. **Chorus mode** — mark start/end during playback; vocals mix back at configurable volume (-6 dB default) through those regions. Outside chorus, the user's own vocals slider is respected (no more "stuck at 0").
+7. **Export** — karaoke MP3 (192 kbps default) or WAV, MP3 + LRC pair, chorus-mixback export, or individual stems. The ffmpeg runner drains stderr concurrently so long renders can't deadlock on a saturated pipe; the last ~8 lines of ffmpeg's error output surface on failure.
+8. **Progress survives navigation** — download/separation state is hoisted into `ProjectManager`, so jumping between projects in the sidebar doesn't abort the job or lose the progress bar.
 
 ### Robustness notes
 
